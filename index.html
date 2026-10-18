@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 Bài tập hóa học - Nền Tảng Hóa Học Thông Minh</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3, #ffd1dc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      overflow: hidden;
+      transition: background 0.5s ease;
+    }
+
+    /* Giao diện full màn hình */
+    .app-container {
+      width: 100%;
+      height: 100%;
+      background: rgba(74, 20, 50, 0.88);
+      border: none;
+      border-radius: 0;
+      padding: 30px 50px;
+      backdrop-filter: blur(15px);
+      box-shadow: inset 0 0 60px rgba(255, 182, 193, 0.2);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-y: auto;
+      transition: background 0.5s ease;
+    }
+
+    .app-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .app-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 182, 193, 0.6);
+      border-radius: 4px;
+    }
+
+    /* Thanh điều hướng Top Nav */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
+    }
+
+    .nav-brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffb6c1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #ffb6c1;
+      color: #4a1432;
+      font-weight: bold;
+      border-color: #ffb6c1;
+    }
+
+    /* Các màn hình chính */
+    .screen {
+      display: none;
+      z-index: 5;
+      flex: 1;
+    }
+
+    .screen.visible {
+      display: block;
+    }
+
+    /* Trang chủ & Đồ họa cute */
+    .hero-banner {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .hero-banner img {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .hero-title {
+      font-size: 38px;
+      text-align: center;
+margin-bottom: 8px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(255, 182, 193, 0.4);
+    }
+
+    .hero-sub {
+      text-align: center;
+      color: #ffb6c1;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .menu-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 182, 193, 0.25);
+      border-color: #ffb6c1;
+      box-shadow: 0 15px 35px rgba(255, 182, 193, 0.3);
+    }
+
+    .menu-card img {
+      width: 75px;
+      height: 75px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .menu-card h3 {
+      font-size: 20px;
+      color: #ffe4e1;
+    }
+
+    /* Nút bấm chung */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #4a1432;
+      background: linear-gradient(90deg, #ffb6c1, #ff758c);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 25px;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Danh sách chương lý thuyết */
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    .chapter-item {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 20px 22px;
+      border-left: 5px solid #ffb6c1;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .chapter-item:hover {
+      background: rgba(0, 0, 0, 0.4);
+      transform: translateX(5px);
+    }
+
+    .chapter-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffe4e1;
+    }
+
+    .chapter-box {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 25px;
+      border-radius: 14px;
+      line-height: 1.8;
+      font-size: 15px;
+      max-width: 950px;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 182, 193, 0.3);
+    }
+
+    .chapter-box h3 {
+      color: #ffe4e1;
+      margin-bottom: 12px;
+font-size: 22px;
+    }
+
+    .chapter-box h4 {
+      color: #ffb6c1;
+      margin: 15px 0 8px 0;
+    }
+
+    /* Từ điển */
+    .search-box {
+      width: 100%;
+      max-width: 950px;
+      margin: 0 auto 20px auto;
+      padding: 14px 18px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      display: block;
+    }
+
+    .dict-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    .dict-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .dict-card:hover {
+      border-color: #ffb6c1;
+      background: rgba(255, 182, 193, 0.15);
+    }
+
+    .dict-card img {
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
+    }
+
+    /* Minigame */
+    .game-wrapper {
+      max-width: 850px;
+      margin: 20px auto;
+      width: 100%;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid #ffb6c1;
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffb6c1;
+    }
+
+    .timer {
+      border-color: #ff758c;
+      color: #ff758c;
+    }
+
+    .progress-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .step {
+      flex: 1;
+      padding: 6px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    .step.active {
+      opacity: 1;
+      background: rgba(255, 182, 193, 0.35);
+      border: 1px solid #ffb6c1;
+      font-weight: bold;
+    }
+
+    .riddle {
+      background: rgba(255, 182, 193, 0.15);
+      border-left: 4px solid #ffb6c1;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    .input-row .btn {
+      width: auto;
+      padding: 12px 24px;
+    }
+
+    .feedback {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      display: none;
+    }
+.hint-box {
+      background: rgba(255, 228, 225, 0.2);
+      border: 1px solid #ffe4e1;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #ffe4e1;
+      display: none;
+    }
+
+    /* BẢNG CHỌN MÀU NẰM Ở GÓC DƯỚI BÊN PHẢI[cite: 6] */
+    .color-picker-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(40, 10, 30, 0.9);
+      border: 1px solid #ffb6c1;
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 999;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    .color-picker-widget span {
+      font-size: 12px;
+      color: #ffb6c1;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .color-options {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      transition: transform 0.2s;
+    }
+
+    .color-circle:hover {
+      transform: scale(1.2);
+    }
+
+    .custom-color-input {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    /* Modal cửa sổ phụ */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-body {
+      background: #4a1432;
+      width: 90%;
+      max-width: 550px;
+      padding: 25px;
+      border-radius: 14px;
+      border: 1px solid #ffb6c1;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #ff758c;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container" id="appContainer">
+  <!-- Thanh điều hướng phía trên -->
+  <div class="top-nav">
+    <div class="nav-brand">🧪 Bài tập hóa học</div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-btn active" id="btnHome" onclick="switchScreen('homeScreen')">Trang chủ</button>
+      <button class="nav-btn" id="btnTheory" onclick="switchScreen('theoryScreen')">Chuyên đề SGK</button>
+      <button class="nav-btn" id="btnDict" onclick="switchScreen('dictScreen')">Từ điển Hóa</button>
+    </div>
+  </div>
+
+  <!-- 1. MÀN HÌNH TRANG CHỦ -->
+  <div id="homeScreen" class="screen visible">
+    <div class="hero-banner">
+      <img src="https://cdn-icons-png.flaticon.com/512/3426/3426658.png" alt="Cute Science Flask">
+    </div>
+    <h1 class="hero-title">⚛️ Nền Tảng Ôn Tập Hóa Học Lớp 9 🔬</h1>
+<div class="hero-sub">Hệ thống chuyên đề SGK chuẩn • Từ điển hóa học tiếng Việt • Minigame củng cố kiến thức</div>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="switchScreen('theoryScreen')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" alt="Book Icon">
+        <h3>Chuyên Đề SGK 9</h3>
+      </div>
+      <div class="menu-card" onclick="switchScreen('dictScreen')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Dictionary Icon">
+        <h3>Từ Điển Hóa Học</h3>
+      </div>
+      <div class="menu-card" onclick="startMinigame(false)">
+        <img src="https://cdn-icons-png.flaticon.com/512/3468/3468377.png" alt="Game Icon">
+        <h3>Minigame Củng Cố</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MÀN HÌNH DANH SÁCH CHƯƠNG -->
+  <div id="theoryScreen" class="screen">
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3209/3209265.png" alt="Atom" style="width: 50px; height: 50px;">
+    </div>
+    <h2 style="color:#ffb6c1; margin-bottom:20px; text-align: center;">📚 Sách Giáo Khoa Hóa Học 9 - Các Chương</h2>
+    <div class="chapter-list">
+      <div class="chapter-item" onclick="openChapter(1)">
+        <div class="chapter-title">Chương 1: Các Loại Hợp Chất Vô Cơ</div>
+      </div>
+      <div class="chapter-item" onclick="openChapter(2)">
+        <div class="chapter-title">Chương 2: Kim Loại</div>
+      </div>
+      <div class="chapter-item" onclick="openChapter(3)">
+        <div class="chapter-title">Chương 3: Phi Kim - Sơ Lược Về Bảng Tuần Hoàn</div>
+      </div>
+      <div class="chapter-item" onclick="openChapter(4)">
+        <div class="chapter-title">Chương 4: Hiđrocacbon - Nhiên Liệu</div>
+      </div>
+      <div class="chapter-item" onclick="openChapter(5)">
+        <div class="chapter-title">Chương 5: Dẫn Xuất Của Hiđrocacbon - Polime</div>
+      </div>
+    </div>
+    <div style="text-align: center;">
+      <button class="back-btn" onclick="switchScreen('homeScreen')">⬅ Quay lại Trang chủ</button>
+    </div>
+  </div>
+
+  <!-- 3. MÀN HÌNH CHI TIẾT CHƯƠNG -->
+  <div id="chapterDetailScreen" class="screen">
+    <div id="chapterContent" class="chapter-box"></div>
+    <div style="text-align: center;">
+      <button class="back-btn" onclick="switchScreen('theoryScreen')">⬅ Quay lại Danh sách chương</button>
+    </div>
+  </div>
+
+  <!-- 4. MÀN HÌNH TỪ ĐIỂN -->
+  <div id="dictScreen" class="screen">
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3069/3069186.png" alt="Lab" style="width: 50px; height: 50px;">
+    </div>
+    <h2 style="color:#ffb6c1; margin-bottom:20px; text-align: center;">📖 Từ Điển Hóa Học Tiếng Việt</h2>
+<input type="text" class="search-box" id="dictInput" placeholder="Nhập tên chất tiếng Việt (VD: Nước, Axit clohidric, Đá vôi...)" oninput="searchDict()">
+    <div id="dictDetailBox" style="display:none; background:rgba(0,0,0,0.4); border:1px solid #ffb6c1; padding:20px; border-radius:10px; margin:0 auto 20px auto; max-width:950px;">
+      <h3 id="detName" style="color:#ffe4e1; margin-bottom:6px; font-size: 20px;"></h3>
+      <p id="detDesc" style="font-size:15px; line-height:1.6;"></p>
+      <button class="back-btn" style="padding:6px 14px; font-size:13px; margin-top:10px;" onclick="document.getElementById('dictDetailBox').style.display='none'">Đóng</button>
+    </div>
+    <div class="dict-grid" id="dictGrid"></div>
+    <div style="text-align: center;">
+      <button class="back-btn" onclick="switchScreen('homeScreen')">⬅ Quay lại Trang chủ</button>
+    </div>
+  </div>
+
+  <!-- 5. MÀN HÌNH MINIGAME -->
+  <div id="gameScreen" class="screen">
+    <div class="game-wrapper">
+      <div class="game-header">
+        <div class="badge" id="scoreBox">⭐ Điểm: 0</div>
+        <div style="display:flex; gap:8px;">
+          <button class="back-btn" style="margin:0; padding:6px 14px; font-size:13px;" onclick="openModal()">📖 Tra từ điển</button>
+          <div class="badge timer" id="timerBox">⏱️ 30s</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="step" id="step1">1. Chất</div>
+        <div class="step" id="step2">2. Nguyên tố</div>
+        <div class="step" id="step3">3. Phản ứng</div>
+        <div class="step" id="step4">4. Cân bằng</div>
+      </div>
+
+      <div style="font-size:13px; color:#ffe4e1; margin-bottom:6px;" id="gameProgress">Câu 1/5</div>
+      <div id="qTitle" style="font-weight:bold; color:#ffb6c1; margin-bottom:10px; font-size: 18px;">BƯỚC 1: ĐOÁN TÊN CHẤT</div>
+      
+      <div id="qContent"></div>
+      <div class="feedback" id="feedbackBox"></div>
+      <div class="hint-box" id="hintBox"></div>
+
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="back-btn" style="margin:0; background:rgba(255,228,225,0.25); border-color:#ffe4e1; color:#ffe4e1;" onclick="showHint()">💡 Gợi ý</button>
+        <button class="back-btn" style="margin:0; background:rgba(255,117,140,0.25); border-color:#ff758c; color:#ff758c;" onclick="checkExitGame()">Thoát minigame</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. MÀN HÌNH TỔNG KẾT GAME -->
+  <div id="endScreen" class="screen" style="text-align:center;">
+    <div style="margin-top: 30px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" alt="Trophy" style="width: 90px; height: 90px; animation: float 3s ease-in-out infinite;">
+    </div>
+    <h2 style="color:#ffb6c1; margin-bottom:15px; font-size: 32px;">🏆 HOÀN THÀNH BÀI LÀM!</h2>
+<div id="finalScore" style="font-size:56px; font-weight:bold; color:#ffe4e1; margin:15px 0;">0 / 20</div>
+    <div id="wrongBox" style="display:none; text-align:left; background:rgba(0,0,0,0.35); padding:15px; border-radius:10px; margin:0 auto 20px auto; max-width: 600px;">
+      <h4 style="color:#ff758c; margin-bottom:6px;">⚠️ Các câu trả lời sai cần ôn lại:</h4>
+      <ul id="wrongList" style="padding-left:20px; font-size:14px; line-height: 1.6;"></ul>
+    </div>
+    <div style="display:flex; gap:12px; max-width: 400px; margin: 0 auto;">
+      <button class="btn" onclick="startMinigame(false)">LÀM LẠI TỪ ĐẦU 🔄</button>
+      <button class="btn" id="retryBtn" onclick="startMinigame(true)" style="display:none; background:linear-gradient(90deg,#ff758c,#e64980);">LÀM LẠI CÂU SAI ⚡</button>
+    </div>
+  </div>
+</div>
+
+<!-- HỆ THỐNG CHỌN MÀU GÓC DƯỚI BÊN PHẢI -->
+<div class="color-picker-widget">
+  <span>🎨 Chọn màu nền</span>
+  <div class="color-options">
+    <div class="color-circle" style="background: linear-gradient(135deg, #ff758c, #ff7eb3);" onclick="changeTheme('#ff758c', '#ff7eb3', 'rgba(74, 20, 50, 0.88)')" title="Hồng kẹo ngọt"></div>
+    <div class="color-circle" style="background: linear-gradient(135deg, #0f2027, #203a43);" onclick="changeTheme('#0f2027', '#203a43', 'rgba(15, 32, 39, 0.92)')" title="Xanh STEM"></div>
+    <div class="color-circle" style="background: linear-gradient(135deg, #654ea3, #eaafc8);" onclick="changeTheme('#654ea3', '#eaafc8', 'rgba(40, 20, 60, 0.88)')" title="Tím mộng mơ"></div>
+    <div class="color-circle" style="background: linear-gradient(135deg, #134e5e, #71b280);" onclick="changeTheme('#134e5e', '#71b280', 'rgba(10, 40, 30, 0.88)')" title="Xanh lá cây"></div>
+    <input type="color" class="custom-color-input" title="Chọn màu tùy ý" onchange="changeCustomTheme(this.value)">
+  </div>
+</div>
+
+<!-- MODAL TRA TỪ ĐIỂN TRONG BÀI LÀM -->
+<div class="modal" id="dictModal">
+  <div class="modal-body">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3 style="color:#ffb6c1; margin-bottom:12px;">📖 Tra Cứu Nhanh Hóa Học</h3>
+    <input type="text" class="search-box" id="modalInput" placeholder="Nhập tên chất..." oninput="searchModal()">
+    <div id="modalResult" style="font-size:14px; max-height:250px; overflow-y:auto; line-height: 1.6;">Gõ từ khóa để tra nhanh...</div>
+  </div>
+</div>
+
+<script>
+  // DỮ LIỆU LÝ THUYẾT 5 CHƯƠNG SGK
+  const theoryData = {
+1: `<h3>Chương 1: Các Loại Hợp Chất Vô Cơ</h3><h4>1. Oxit</h4><p>Oxit axit tác dụng nước ra axit; Oxit bazơ tác dụng nước ra bazơ tương ứng.</p><h4>2. Axit</h4><p>Làm quỳ tím hóa đỏ, tác dụng kim loại đứng trước H ra muối và H₂.</p><h4>3. Bazơ</h4><p>Kiềm làm quỳ tím hóa xanh, làm dung dịch phenolphtalein hóa hồng.</p><h4>4. Muối</h4><p>Tham gia phản ứng trao đổi với axit, bazơ, muối khác.</p>`,
+    2: `<h3>Chương 2: Kim Loại</h3><h4>1. Tính chất chung</h4><p>Tác dụng phi kim, dung dịch axit và dung dịch muối.</p><h4>2. Dãy hoạt động hóa học</h4><p>K, Na, Mg, Al, Zn, Fe, Pb, (H), Cu, Ag, Au. Mức độ hoạt động giảm dần.</p><h4>3. Nhôm & Sắt</h4><p>Nhôm nhẹ, lưỡng tính. Sắt có tính nhiễm từ, tạo gang và thép.</p>`,
+    3: `<h3>Chương 3: Phi Kim & Bảng Tuần Hoàn</h3><h4>1. Phi kim</h4><p>Clo có tính tẩy màu khi ẩm. Cacbon có tính khử ở nhiệt độ cao.</p><h4>2. Bảng tuần hoàn</h4><p>Gồm Ô nguyên tố, Chu kỳ và Nhóm nguyên tố.</p>`,
+    4: `<h3>Chương 4: Hiđrocacbon - Nhiên Liệu</h3><h4>1. Mêtan (CH₄)</h4><p>Tham gia phản ứng thế với Clo ngoài ánh sáng.</p><h4>2. Etilen (C₂H₄)</h4><p>Có liên kết đôi C=C, tham gia phản ứng cộng làm mất màu dung dịch Brom.</p>`,
+    5: `<h3>Chương 5: Dẫn Xuất Của Hiđrocacbon - Polime</h3><h4>1. Rượu etylic & Axit axetic</h4><p>Axit axetic có vị chua giấm ăn, tác dụng rượu etylic tạo este.</p><h4>2. Tinh bột & Xenlulozơ</h4><p>Tinh bột làm iot hóa xanh tím. Tinh bột và xenlulozơ là polime thiên nhiên.</p>`
+  };
+
+  // DỮ LIỆU TỪ ĐIỂN KÈM HÌNH ẢNH ICON CUTE
+  const chemDict = [
+    { name: "Nước", formula: "H₂O", desc: "Chất lỏng không màu, không mùi, dung môi hòa tan sự sống.", icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" },
+    { name: "Khí cacbonic", formula: "CO₂", desc: "Khí nặng hơn không khí, làm đục nước vôi trong Ca(OH)₂.", icon: "https://cdn-icons-png.flaticon.com/512/4149/4149680.png" },
+    { name: "Hiđro", formula: "H₂", desc: "Khí nhẹ nhất, cháy tỏa nhiều nhiệt sinh ra nước.", icon: "https://cdn-icons-png.flaticon.com/512/2674/2674406.png" },
+    { name: "Axit clohidric", formula: "HCl", desc: "Dung dịch axit mạnh trong dạ dày, làm quỳ tím hóa đỏ.", icon: "https://cdn-icons-png.flaticon.com/512/2854/2854553.png" },
+    { name: "Muối ăn (Natri clorua)", formula: "NaCl", desc: "Muối vị mặn, gia vị thiết yếu hàng ngày.", icon: "https://cdn-icons-png.flaticon.com/512/3014/3014529.png" },
+    { name: "Canxi cacbonat (Đá vôi)", formula: "CaCO₃", desc: "Chất rắn màu trắng, thành phần chính của đá vôi, vỏ ốc.", icon: "https://cdn-icons-png.flaticon.com/512/2748/2748558.png" }
+  ];
+
+  // HỆ THỐNG ĐỔI MÀU NỀN
+  function changeTheme(c1, c2, containerBg) {
+    document.body.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+    document.getElementById('appContainer').style.background = containerBg;
+  }
+function changeCustomTheme(hex) {
+    document.body.style.background = hex;
+    document.getElementById('appContainer').style.background = "rgba(20, 20, 20, 0.9)";
+  }
+
+  // DỮ LIỆU CÂU HỎI GAME
+  const qBank = [
+    {
+      id: 1, name: "Nước", nameKw: ["nước", "h2o"], elements: ["hiđro", "oxi"],
+      reaction: "natri + nước", reactionKw: ["naoh + h2"],
+      clues: ["Chất lỏng không màu không vị.", "Chiếm phần lớn diện tích Trái Đất.", "Công thức: H₂O."],
+      hint: "Chất lỏng bạn uống hàng ngày.", exp: "Nước tác dụng Natri sinh ra NaOH và khí H₂."
+    },
+    {
+      id: 2, name: "Khí cacbonic", nameKw: ["khí cacbonic", "co2", "cacbon đioxit"], elements: ["cacbon", "oxi"],
+      reaction: "nước vôi trong + khí cacbonic", reactionKw: ["caco3 + h2o"],
+      clues: ["Khí không màu, nặng hơn không khí.", "Làm vẩn đục nước vôi trong Ca(OH)₂.", "Khí sinh ra khi thở."],
+      hint: "Khí làm đục nước vôi trong.", exp: "CO₂ tác dụng Ca(OH)₂ tạo kết tủa CaCO₃ trắng."
+    },
+    {
+      id: 3, name: "Hiđro", nameKw: ["hiđro", "h2"], elements: ["hiđro"],
+      reaction: "kẽm + axit clohidric", reactionKw: ["zncl2 + h2"],
+      clues: ["Khí nhẹ nhất trong các khí.", "Cháy sinh ra nước.", "Công thức đơn chất: H₂."],
+      hint: "Khí nhẹ nhất vũ trụ.", exp: "Zn tác dụng HCl tạo ZnCl₂ và giải phóng khí H₂."
+    }
+  ];
+
+  let gameQ = [], qIndex = 0, step = 1, score = 0, wrongArr = [], timer = null, timeLeft = 30;
+
+  function switchScreen(id) {
+    clearInterval(timer);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+
+    const navLinks = document.getElementById('navLinks');
+    if (id === 'gameScreen') {
+      navLinks.style.display = 'none';
+    } else {
+      navLinks.style.display = 'flex';
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if(id === 'homeScreen') document.getElementById('btnHome').classList.add('active');
+    if(id === 'theoryScreen' || id === 'chapterDetailScreen') document.getElementById('btnTheory').classList.add('active');
+    if(id === 'dictScreen') {
+      document.getElementById('btnDict').classList.add('active');
+      renderDict();
+    }
+  }
+
+  function checkExitGame() {
+    if (score > 0) {
+      if (confirm("Bạn đã ghi được điểm số trong bài làm này! Bạn có chắc chắn muốn thoát không? Tiến trình hiện tại sẽ mất.")) {
+        switchScreen('homeScreen');
+      }
+    } else {
+      switchScreen('homeScreen');
+    }
+  }
+
+  function openChapter(num) {
+    document.getElementById('chapterContent').innerHTML = theoryData[num];
+    switchScreen('chapterDetailScreen');
+  }
+
+  function renderDict(filter = "") {
+    const grid = document.getElementById('dictGrid');
+const list = chemDict.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()) || c.formula.toLowerCase().includes(filter.toLowerCase()));
+    grid.innerHTML = list.map(c => `
+      <div class="dict-card" onclick="showDictDetail('${c.name}', '${c.formula}', '${c.desc}')">
+        <img src="${c.icon}" alt="icon">
+        <div>
+          <b style="color:#ffe4e1; font-size: 16px;">${c.name} (${c.formula})</b>
+          <p style="font-size:13px; color:rgba(255,255,255,0.8); margin-top:4px;">${c.desc.substring(0, 35)}...</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showDictDetail(name, formula, desc) {
+    const box = document.getElementById('dictDetailBox');
+    box.style.display = 'block';
+    document.getElementById('detName').innerText = `${name} (${formula})`;
+    document.getElementById('detDesc').innerText = desc;
+  }
+
+  function searchDict() {
+    renderDict(document.getElementById('dictInput').value);
+  }
+
+  function startMinigame(retry = false) {
+    gameQ = retry ? [...wrongArr] : [...qBank].sort(() => 0.5 - Math.random());
+    if(!retry) wrongArr = [];
+    qIndex = 0; step = 1; score = 0;
+    switchScreen('gameScreen');
+    loadQuestion();
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timeLeft = 30;
+    document.getElementById('timerBox').innerText = `⏱️ ${timeLeft}s`;
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timerBox').innerText = `⏱️ ${timeLeft}s`;
+      if(timeLeft <= 0) {
+        clearInterval(timer);
+        alert("Hết giờ 30s!");
+        nextStep();
+      }
+    }, 1000);
+  }
+
+  function loadQuestion() {
+    startTimer();
+    const q = gameQ[qIndex];
+    document.getElementById('scoreBox').innerText = `⭐ Điểm: ${score}`;
+    document.getElementById('gameProgress').innerText = `Câu ${qIndex + 1}/${gameQ.length} (Bước ${step}/4)`;
+
+    for(let i=1; i<=4; i++) {
+      const el = document.getElementById(`step${i}`);
+      el.className = "step" + (i === step ? " active" : "");
+    }
+
+    const content = document.getElementById('qContent');
+    document.getElementById('feedbackBox').style.display = 'none';
+    document.getElementById('hintBox').style.display = 'none';
+
+    if(step === 1) {
+      document.getElementById('qTitle').innerText = "BƯỚC 1: ĐOÁN TÊN CHẤT";
+      content.innerHTML = `
+        <div class="riddle">${q.clues.map(c => `• ${c}`).join('<br>')}</div>
+        <div class="input-row">
+          <input type="text" id="ansInput" placeholder="Nhập tên chất...">
+          <button class="btn" onclick="checkStep()">Gửi</button>
+        </div>
+      `;
+    } else if(step === 2) {
+      document.getElementById('qTitle').innerText = "BƯỚC 2: NGUYÊN TỐ TẠO THÀNH";
+      content.innerHTML = `
+        <div style="margin-bottom:10px;">Chất <b>${q.name}</b> tạo bởi nguyên tố nào?</div>
+        <div class="input-row">
+          <input type="text" id="ansInput" placeholder="VD: Hiđro, Oxi...">
+<button class="btn" onclick="checkStep()">Gửi</button>
+        </div>
+      `;
+    } else if(step === 3) {
+      document.getElementById('qTitle').innerText = "BƯỚC 3: PHẢN ỨNG HÓA HỌC";
+      content.innerHTML = `
+        <div style="margin-bottom:10px;">Phản ứng: <b>${q.reaction}</b> ra sản phẩm gì?</div>
+        <div class="input-row">
+          <input type="text" id="ansInput" placeholder="Nhập sản phẩm...">
+          <button class="btn" onclick="checkStep()">Gửi</button>
+        </div>
+      `;
+    } else if(step === 4) {
+      document.getElementById('qTitle').innerText = "BƯỚC 4: CÂN BẰNG PHƯƠNG TRÌNH";
+      content.innerHTML = `
+        <div style="margin-bottom:10px;">Nhập hệ số đúng: 2 Na + 2 H₂O ➔ 2 NaOH + 1 H₂</div>
+        <button class="btn" onclick="checkStep(true)">Xác nhận cân bằng</button>
+      `;
+    }
+  }
+
+  function checkStep(isStep4 = false) {
+    clearInterval(timer);
+    const q = gameQ[qIndex];
+    let correct = false;
+
+    if(!isStep4) {
+      const val = document.getElementById('ansInput').value.toLowerCase().trim();
+      if(step === 1) correct = q.nameKw.some(k => val.includes(k));
+      if(step === 2) correct = q.elements.some(k => val.includes(k));
+      if(step === 3) correct = q.reactionKw.some(k => val.includes(k));
+    } else {
+      correct = true; 
+    }
+
+    const fb = document.getElementById('feedbackBox');
+    fb.style.display = 'block';
+
+    if(correct) {
+      score += 1;
+      fb.style.color = '#68d391';
+      fb.innerText = `✅ Chính xác! +1 điểm. ${q.exp}`;
+    } else {
+      if(!wrongArr.some(w => w.id === q.id)) wrongArr.push(q);
+      fb.style.color = '#ff758c';
+      fb.innerText = `❌ Chưa đúng! ${q.exp}`;
+    }
+
+    setTimeout(nextStep, 1800);
+  }
+
+  function nextStep() {
+    step++;
+    if(step > 4) { step = 1; qIndex++; }
+    if(qIndex >= gameQ.length) {
+      endGame();
+    } else {
+      loadQuestion();
+    }
+  }
+
+  function showHint() {
+    const hintBox = document.getElementById('hintBox');
+    hintBox.style.display = 'block';
+    hintBox.innerHTML = `💡 <b>Gợi ý:</b> ${gameQ[qIndex].hint}`;
+  }
+
+  function endGame() {
+    switchScreen('endScreen');
+    document.getElementById('finalScore').innerText = `${score} / ${gameQ.length * 4}`;
+    const wrongBox = document.getElementById('wrongBox');
+    if(wrongArr.length > 0) {
+      wrongBox.style.display = 'block';
+      document.getElementById('wrongList').innerHTML = wrongArr.map(w => `<li><b>${w.name}</b></li>`).join('');
+      document.getElementById('retryBtn').style.display = 'inline-block';
+    } else {
+      wrongBox.style.display = 'none';
+      document.getElementById('retryBtn').style.display = 'none';
+    }
+  }
+
+  function openModal() { document.getElementById('dictModal').style.display = 'flex'; }
+  function closeModal() { document.getElementById('dictModal').style.display = 'none'; }
+  function searchModal() {
+const val = document.getElementById('modalInput').value.toLowerCase();
+    const res = chemDict.filter(c => c.name.toLowerCase().includes(val));
+    document.getElementById('modalResult').innerHTML = res.map(c => `<p style="margin-bottom:8px;"><b>${c.name} (${c.formula}):</b> ${c.desc}</p>`).join('') || "Không thấy chất này.";
+  }
+</script>
+</body>
+</html>
